@@ -24,14 +24,14 @@ scan_url () {
 
     echo "Scanning $url... (Depth: $depth)"
 
-    # Fetch the page content
+    # Fetch the page content and remove null bytes
     content=$(curl -A "$user_agent" -s "$url")
-
+    
     # Check if the pattern exists in the content
     if echo "$content" | grep -qi "$search_string"; then
         echo "Pattern found in $url"
     #else
-        #echo "Pattern not found in $url"
+    #    echo "Pattern not found in $url"
     fi
 
     # Mark URL as visited
@@ -42,9 +42,17 @@ scan_url () {
         return
     fi
 
-    # Extract sub-page URLs and scan them if they have not been visited
+    # Extract sub-page URLs
     sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*' | grep -E "^https?://tumnet.com")
 
+    echo "Sub-URLs found on $url:"
+
+    # Print each sub-URL for debugging
+    for sub_url in $sub_urls; do
+        echo "  $sub_url"
+    done
+    
+    # Scan each sub-URL if they have not been visited
     for sub_url in $sub_urls; do
         if [[ ! " ${visited_urls[@]} " =~ " ${sub_url} " ]]; then
             urls+=("$sub_url")
