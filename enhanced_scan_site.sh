@@ -6,13 +6,13 @@ declare -a urls=("https://tumnet.com/en/")
 declare -a visited_urls=()
 
 # String pattern to search for
-search_string="acciones de infracción"
+search_string="apidevst"
 
 # User-agent header to use (optional)
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
 # Maximum depth for recursive scanning
-max_depth=2
+max_depth=8
 
 # Delay between requests in seconds
 delay_secs=2
