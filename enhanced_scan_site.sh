@@ -24,7 +24,6 @@ normalize_url() {
 
     # If the URL is relative, prepend the base URL
     if [[ $url == /* ]]; then
-        # Normalize the URL relative to the base URL
         echo "$(dirname "$base_url")${url}"
     else
         echo "$url"
@@ -57,7 +56,7 @@ scan_url () {
     fi
 
     # Extract all URLs from href and src attributes, including .css, .js, and image files
-    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*' | grep -E '^https?://|^/[^/]|(\.css$|\.js$|\.png$|\.jpg$|\.jpeg$|\.gif$)')
+    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*|(?<=href=\x27)[^\x27]*|(?<=src=\x27)[^\x27]*' | grep -E '^https?://|^/[^/]|(\.css$|\.js$|\.png$|\.jpg$|\.jpeg$|\.gif$)')
 
     echo "Sub-URLs found on $url:"
 
