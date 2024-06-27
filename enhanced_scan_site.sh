@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # List of initial URLs to scan
-declare -a urls=("https://tumnet.com/")
+declare -a urls=("https://tumnet.com/en/")
 # Array to keep track of visited URLs
 declare -a visited_urls=()
 
 # String pattern to search for
-search_string="your_search_pattern"
+search_string="jet-blog-js"
 
 # User-agent header to use (optional)
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
