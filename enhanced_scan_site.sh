@@ -6,7 +6,7 @@ declare -a urls=("https://tumnet.com/en/")
 declare -a visited_urls=()
 
 # String pattern to search for
-search_string="jet-blog-js"
+search_string="acciones de infracción"
 
 # User-agent header to use (optional)
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
@@ -30,8 +30,8 @@ scan_url () {
     # Check if the pattern exists in the content
     if echo "$content" | grep -qi "$search_string"; then
         echo "Pattern found in $url"
-    else
-        echo "Pattern not found in $url"
+    #else
+        #echo "Pattern not found in $url"
     fi
 
     # Mark URL as visited
