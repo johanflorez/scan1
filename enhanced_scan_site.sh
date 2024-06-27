@@ -12,7 +12,7 @@ search_string="apidevst"
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
 # Maximum depth for recursive scanning
-max_depth=2
+max_depth=3
 
 # Delay between requests in seconds
 delay_secs=2
