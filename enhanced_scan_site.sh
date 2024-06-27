@@ -12,7 +12,7 @@ search_string="apidevst"
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
 # Maximum depth for recursive scanning
-max_depth=8
+max_depth=5
 
 # Delay between requests in seconds
 delay_secs=2
@@ -25,13 +25,13 @@ scan_url () {
     echo "Scanning $url... (Depth: $depth)"
 
     # Fetch the page content and remove null bytes
-    content=$(curl -A "$user_agent" -s "$url")
+    content=$(curl -A "$user_agent" -s "$url" | tr -d '\000')
     
     # Check if the pattern exists in the content
     if echo "$content" | grep -qi "$search_string"; then
         echo "Pattern found in $url"
-    #else
-    #    echo "Pattern not found in $url"
+    else
+        echo "Pattern not found in $url"
     fi
 
     # Mark URL as visited
@@ -42,18 +42,24 @@ scan_url () {
         return
     fi
 
-    # Extract sub-page URLs
-    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*' | grep -E "^https?://tumnet.com")
+    # Extract sub-page URLs, including various resource types
+    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*' | grep -E "^https?://tumnet.com|^/[^/]")
 
     echo "Sub-URLs found on $url:"
 
-    # Print each sub-URL for debugging
+    # Print each sub-URL for debugging and normalize relative URLs
     for sub_url in $sub_urls; do
+        if [[ $sub_url == /* ]]; then
+            sub_url="https://tumnet.com${sub_url}"
+        fi
         echo "  $sub_url"
     done
     
     # Scan each sub-URL if they have not been visited
     for sub_url in $sub_urls; do
+        if [[ $sub_url == /* ]]; then
+            sub_url="https://tumnet.com${sub_url}"
+        fi
         if [[ ! " ${visited_urls[@]} " =~ " ${sub_url} " ]]; then
             urls+=("$sub_url")
             visited_urls+=("$sub_url")
