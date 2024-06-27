@@ -12,10 +12,24 @@ search_string="apidevst"
 user_agent="Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
 
 # Maximum depth for recursive scanning
-max_depth=5
+max_depth=2
 
 # Delay between requests in seconds
 delay_secs=2
+
+# Function to normalize URLs
+normalize_url() {
+    local url="$1"
+    local base_url="$2"
+
+    # If the URL is relative, prepend the base URL
+    if [[ $url == /* ]]; then
+        # Normalize the URL relative to the base URL
+        echo "$(dirname "$base_url")${url}"
+    else
+        echo "$url"
+    fi
+}
 
 # Function to scan a single URL
 scan_url () {
@@ -42,24 +56,20 @@ scan_url () {
         return
     fi
 
-    # Extract sub-page URLs, including various resource types
-    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*' | grep -E "^https?://tumnet.com|^/[^/]")
+    # Extract all URLs from href and src attributes, including .css, .js, and image files
+    sub_urls=$(echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*' | grep -E '^https?://|^/[^/]|(\.css$|\.js$|\.png$|\.jpg$|\.jpeg$|\.gif$)')
 
     echo "Sub-URLs found on $url:"
 
     # Print each sub-URL for debugging and normalize relative URLs
-    for sub_url in $sub_urls; do
-        if [[ $sub_url == /* ]]; then
-            sub_url="https://tumnet.com${sub_url}"
-        fi
+    for raw_sub_url in $sub_urls; do
+        sub_url=$(normalize_url "$raw_sub_url" "$url")
         echo "  $sub_url"
     done
     
     # Scan each sub-URL if they have not been visited
-    for sub_url in $sub_urls; do
-        if [[ $sub_url == /* ]]; then
-            sub_url="https://tumnet.com${sub_url}"
-        fi
+    for raw_sub_url in $sub_urls; do
+        sub_url=$(normalize_url "$raw_sub_url" "$url")
         if [[ ! " ${visited_urls[@]} " =~ " ${sub_url} " ]]; then
             urls+=("$sub_url")
             visited_urls+=("$sub_url")
